@@ -1,0 +1,137 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: 'Segoe UI', sans-serif;
+}
+
+body{
+background: linear-gradient(135deg,#073d12,#004311);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{ 
+background:white;
+padding:40px;
+border-radius:12px;
+width:600px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+text-align:center;
+}
+
+h1{
+margin-bottom:20px;
+color:#222;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+outline:none;
+font-size:15px;
+transition:0.3s;
+}
+
+input:focus{
+border-color:#28a745;
+box-shadow:0 0 4px rgba(40,167,69,0.4);
+}
+
+
+button{
+width:150px;
+padding:12px;
+background:#27ae60;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover{
+background:#218838;
+transform:scale(1.05);
+}
+
+h2{
+margin-top:20px;
+color:#333;
+}
+
+.link{
+margin-top:10px;
+display:block;
+color:#3498db;
+text-decoration:none;
+}
+
+.dashboard{
+width:700px;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.form{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
+}
+
+.form input{
+flex:1;
+}
+
+#expenseList li{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#f4f4f4;
+padding:12px 15px;
+margin:6px 0;
+border-radius:8px;
+font-size:18px;
+}
+
+#total{
+color:#28a745;
+font-weight:bold;
+font-size:20px;
+}
+
+canvas{
+margin-top:20px;
+}
+
+#expenseList button{
+background:red;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:5px;
+cursor:pointer;
+font-size:16px;
+}
+
+#expenseList button:hover{
+background:#c0392b;
+}
+
+.logout{
+background:#e74c3c;
+margin-bottom:10px;
+}
+
+#deleteAll{
+background:#e74c3c; 
+}
