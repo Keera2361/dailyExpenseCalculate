@@ -39,7 +39,7 @@ npm install
 4. Start the server
 
 ```
-npm start
+npm start or npm run dev (if nodemon installed)
 ```
 
 ## Project Structure
