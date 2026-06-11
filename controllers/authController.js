@@ -1,6 +1,8 @@
 const User = require("../models/User.js");
+const Session = require("../models/Session.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const registerUser = async (req, res) => {
   try {
@@ -20,11 +22,10 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    // create session and issue token with jti
+    const jti = crypto.randomUUID();
+    await Session.create({ userId: user._id, jti, ip: req.ip, userAgent: req.get('User-Agent') });
+    const token = jwt.sign({ id: user._id, jti }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(201).json({
       message: "Register successful",
@@ -55,11 +56,10 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    // create session and return token with jti
+    const jti = crypto.randomUUID();
+    await Session.create({ userId: user._id, jti, ip: req.ip, userAgent: req.get('User-Agent') });
+    const token = jwt.sign({ id: user._id, jti }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.json({
       message: "Login successful",
@@ -75,7 +75,21 @@ const loginUser = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  try {
+    // protect middleware will attach req.user with id and jti
+    const { id, jti } = req.user || {};
+    if (!id || !jti) return res.status(400).json({ message: 'Bad request' });
+
+    await Session.updateOne({ userId: id, jti }, { revoked: true });
+    return res.json({ message: 'Logged out' });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  logoutUser,
 };

@@ -18,10 +18,6 @@ app.get("/", (req,res) => {
     res.send("Welcome to the Daily Expenses...");
 });
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected!!"))
-    .catch((err) => console.log("MongoDB Connection Error: ", err));
-
 app.use("/api/user", authRoutes);
 app.use("/api/expenses", expenseRoutes);
 
@@ -30,7 +26,7 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
 app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
     console.log(`http://localhost:${PORT}`);
 });

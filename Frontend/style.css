@@ -6,7 +6,7 @@ font-family: 'Segoe UI', sans-serif;
 }
 
 body{
-background: linear-gradient(135deg,#073d12,#004311);
+background: linear-gradient(135deg,#065f46,#10b981);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -89,7 +89,22 @@ margin-bottom:20px;
 }
 
 .form input{
-flex:1;
+	/* don't force all input types to grow (checkboxes would stretch) */
+}
+
+/* let text/number/date inputs expand to fill the form row */
+.form input[type="text"],
+.form input[type="number"],
+.form input[type="date"]{
+	flex:1;
+}
+
+/* keep checkbox compact */
+.form input[type="checkbox"]{
+	flex:0 0 auto;
+	width:auto;
+	margin:0 6px;
+	align-self:center;
 }
 
 #expenseList li{
@@ -130,8 +145,4 @@ background:#c0392b;
 .logout{
 background:#e74c3c;
 margin-bottom:10px;
-}
-
-#deleteAll{
-background:#e74c3c; 
 }
