@@ -1,4 +1,4 @@
-const API = "http://localhost:8000/api/expenses";
+const API = "https://dailyexpensecalculate.onrender.com";
 
 if(!localStorage.getItem("token")){
     window.location.href = "login.html";
