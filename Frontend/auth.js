@@ -1,4 +1,4 @@
-const API = "http://localhost:8000/api/user";
+const API = "https://dailyexpensecalculate.onrender.com";
 
 async function register(){
 
