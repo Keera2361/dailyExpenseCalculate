@@ -13,9 +13,12 @@
 
 <input type="text" id="name" placeholder="Name">
 <input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
+<div style="position:relative; width:100%;">
+	<input type="password" id="password" placeholder="Password">
+	<button type="button" class="password-toggle" onclick="togglePassword('password', this)">Show</button>
+</div>
 
-<button onclick="register()">Register</button>
+<button class="btn btn-green" onclick="register()">Register</button>
 
 <a class="link" href="login.html">Already have account? Login</a>
 

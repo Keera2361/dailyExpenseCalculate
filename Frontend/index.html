@@ -11,7 +11,7 @@
 
         <div class="container">
 
-            <button class="logout" onclick="logout()">Logout</button>
+            <button class="btn btn-green logout" onclick="logout()">Logout</button>
 
             <h1>Daily Expense Tracker</h1>
 
@@ -22,10 +22,13 @@
                                     <input type="checkbox" id="useDate"> Use custom date
                                 </label>
                                 <input type="date" id="date" placeholder="Date (optional)" style="margin-left:8px; display:none;">
-                                <button onclick="addExpense()">Add Expense</button>
+                            <button class="btn btn-green" onclick="addExpense()">Add Expense</button>
+                            <button id="showAllBtn" class="btn btn-green" style="margin-left:8px;">Show All</button>
                         </div>
 
-            <h2>Today's Expenses</h2>
+                        <div id="filterLabel" style="margin-top:8px;color:#0b1220;font-weight:600;"></div>
+
+            
 
             <ul id="expenseList"></ul>
 

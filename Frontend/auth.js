@@ -63,3 +63,16 @@ localStorage.setItem("token", data.token);
 window.location.href = "index.html";
 
 }
+
+// Toggle password visibility for inputs
+function togglePassword(inputId, btn){
+	const input = document.getElementById(inputId);
+	if(!input) return;
+	if(input.type === 'password'){
+		input.type = 'text';
+		if(btn) btn.innerText = 'Hide';
+	} else {
+		input.type = 'password';
+		if(btn) btn.innerText = 'Show';
+	}
+}

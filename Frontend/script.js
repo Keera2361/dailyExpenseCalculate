@@ -1,4 +1,5 @@
-const API = "https://dailyexpensecalculate.onrender.com/api/expenses";
+// Use deployed API endpoint
+const API = 'https://dailyexpensecalculate.onrender.com/api/expenses';
 
 if(!localStorage.getItem("token")){
     window.location.href = "login.html";
@@ -8,17 +9,47 @@ const TOKEN = localStorage.getItem("token");
 
 let chart;
 
+// Current date filter (defaults to today)
+let filterDateObj;
+// filterMode: 'all' | 'today' | 'date'
+let filterMode = 'all';
+
 // pre-fill date input with today's date (YYYY-MM-DD)
 const _dateInput = document.getElementById("date");
 if (_dateInput && !_dateInput.value) {
     _dateInput.value = new Date().toISOString().split('T')[0];
 }
 
-// toggle date input visibility when checkbox changes
+// initialize filterDateObj to the date input (or today)
+filterDateObj = _dateInput && _dateInput.value ? new Date(_dateInput.value + 'T12:00:00') : new Date();
+
+// toggle date input visibility when checkbox changes and update filter
 const useDateCheckbox = document.getElementById('useDate');
 if (useDateCheckbox) {
     useDateCheckbox.addEventListener('change', () => {
         if (_dateInput) _dateInput.style.display = useDateCheckbox.checked ? 'inline-block' : 'none';
+        // set filter date to the selected date or to today
+        if (useDateCheckbox.checked && _dateInput && _dateInput.value) {
+            filterDateObj = new Date(_dateInput.value + 'T12:00:00');
+            filterMode = 'date';
+                updateFilterLabel();
+        } else {
+            filterDateObj = new Date();
+            filterMode = 'today';
+                updateFilterLabel();
+        }
+        loadExpenses();
+    });
+}
+
+// update filter when the date input changes
+if (_dateInput) {
+    _dateInput.addEventListener('change', () => {
+        if (_dateInput.value) filterDateObj = new Date(_dateInput.value + 'T12:00:00');
+        // selecting a date implies date-filter mode
+        filterMode = 'date';
+        updateFilterLabel();
+        loadExpenses();
     });
 }
 
@@ -31,28 +62,54 @@ const useDate = useDateCheckbox && useDateCheckbox.checked;
 
 const item = itemInput.value.trim();
 const amount = parseFloat(amountInput.value);
-const dateValue = useDate && dateInput && dateInput.value ? new Date(dateInput.value).toISOString() : new Date().toISOString();
+// Normalize user-picked dates to midday UTC to avoid timezone shifts
+const dateValue = useDate && dateInput && dateInput.value
+    ? new Date(dateInput.value + 'T12:00:00').toISOString()
+    : new Date().toISOString();
 
 if(!item || isNaN(amount)){
     alert("Please enter item and amount");
     return;
 };
 
-await fetch(API+"/add",{
-    method:"POST",
-    headers:{
-        "Content-Type":"application/json",
-        "Authorization": "Bearer " + TOKEN
-    },
-    body:JSON.stringify({item,amount,date: dateValue})
-});
+try{
+    const res = await fetch(API + "/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + TOKEN
+        },
+        body: JSON.stringify({ item, amount, date: dateValue })
+    });
 
-itemInput.value = "";
-amountInput.value = "";
-if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
-if(useDateCheckbox) { useDateCheckbox.checked = false; if(_dateInput) _dateInput.style.display = 'none'; }
+    const body = await res.json().catch(()=>null);
+    if (!res.ok) {
+        const msg = (body && body.message) ? body.message : `Server returned ${res.status}`;
+        alert('Could not add expense: ' + msg);
+        return;
+    }
 
-loadExpenses();
+    // keep the selected date visible after adding when user used custom date
+    itemInput.value = "";
+    amountInput.value = "";
+    if (useDate && dateInput && dateInput.value) {
+        filterDateObj = new Date(dateInput.value + 'T12:00:00');
+        // keep the date input value as-is (do not reset)
+    } else {
+        filterDateObj = new Date();
+        // reset date input to today when not using custom date
+        if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    updateFilterLabel();
+    loadExpenses();
+
+} catch (err) {
+    console.error('Add expense error', err);
+    alert('Network error: could not reach the server.');
+}
+
+
 
 };
 
@@ -100,30 +157,38 @@ let total = 0;
 
 let monthlyData = {};
 
-const today = new Date().toDateString();
-
+// Apply filter mode
+const now = new Date();
 data.forEach(expense => {
+    const expenseObj = new Date(expense.date);
 
-const expenseDate = new Date(expense.date).toDateString();
+    if (filterMode === 'date') {
+        if (!filterDateObj) return;
+        if (expenseObj.getFullYear() !== filterDateObj.getFullYear() ||
+            expenseObj.getMonth() !== filterDateObj.getMonth() ||
+            expenseObj.getDate() !== filterDateObj.getDate()) return;
+    } else if (filterMode === 'today') {
+        if (expenseObj.getFullYear() !== now.getFullYear() ||
+            expenseObj.getMonth() !== now.getMonth() ||
+            expenseObj.getDate() !== now.getDate()) return;
+    }
 
-if(expenseDate !== today) return;
+    total += expense.amount;
 
-total += expense.amount;
-
-const li = document.createElement("li");
-const displayDate = new Date(expense.date).toLocaleDateString();
-li.innerHTML = `
+    const li = document.createElement("li");
+    const displayDate = expenseObj.toLocaleDateString();
+    li.innerHTML = `
 ${expense.item} - ₹${expense.amount} <span style="color:#666;font-size:0.9em;">(${displayDate})</span>
-<button onclick="deleteExpense('${expense._id}')">Delete</button>
+<button class="btn btn-danger btn-small" onclick="deleteExpense('${expense._id}')">Delete</button>
 `;
 
-list.appendChild(li);
+    list.appendChild(li);
 
-const month = new Date(expense.date).toLocaleString('default',{month:'short'});
+    const month = expenseObj.toLocaleString('default',{month:'short'});
 
-if(!monthlyData[month]) monthlyData[month]=0;
+    if(!monthlyData[month]) monthlyData[month]=0;
 
-monthlyData[month]+=expense.amount;
+    monthlyData[month]+=expense.amount;
 
 });
 
@@ -156,6 +221,33 @@ data:values
 };
 
 loadExpenses();
+const showAllBtn = document.getElementById('showAllBtn');
+if (showAllBtn) {
+    showAllBtn.addEventListener('click', () => {
+        filterMode = 'all';
+        // clear custom date UI
+        if (useDateCheckbox) { useDateCheckbox.checked = false; }
+        if (_dateInput) { _dateInput.style.display = 'none'; }
+        updateFilterLabel();
+        loadExpenses();
+    });
+}
+
+// show initial label
+updateFilterLabel();
+
+function updateFilterLabel(){
+    const label = document.getElementById('filterLabel');
+    if (!label) return;
+    if (filterMode === 'date' && filterDateObj){
+        const opts = { day: 'numeric', month: 'short', year: 'numeric' };
+        label.innerText = `Showing: ${filterDateObj.toLocaleDateString(undefined, opts)}`;
+    } else if (filterMode === 'today'){
+        label.innerText = 'Showing: Today';
+    } else {
+        label.innerText = 'Showing: All';
+    }
+}
 
 function logout(){
     

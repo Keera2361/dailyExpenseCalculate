@@ -6,36 +6,39 @@ font-family: 'Segoe UI', sans-serif;
 }
 
 body{
-background: linear-gradient(135deg,#065f46,#10b981);
+background: linear-gradient(135deg,#0f172a,#0ea5a0);
 display:flex;
 justify-content:center;
-align-items:center;
+align-items:flex-start;
+padding:40px 0;
 min-height:100vh;
 }
 
 .container{ 
-background:white;
-padding:40px;
-border-radius:12px;
-width:600px;
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
-text-align:center;
+background:linear-gradient(180deg,#ffffff, #f8fafc);
+padding:28px;
+border-radius:14px;
+max-width:900px;
+width:95%;
+box-shadow:0 12px 40px rgba(12,36,64,0.15);
+text-align:left;
 }
 
 h1{
-margin-bottom:20px;
-color:#222;
+margin-bottom:14px;
+color:#0f172a;
+font-size:28px;
 }
 
 input{
 width:100%;
-padding:10px;
-margin:10px 0;
-border-radius:6px;
-border:1px solid #ccc;
+padding:10px 12px;
+margin:6px 0;
+border-radius:8px;
+border:1px solid #e6e9ef;
 outline:none;
 font-size:15px;
-transition:0.3s;
+transition:0.18s;
 }
 
 input:focus{
@@ -44,22 +47,22 @@ box-shadow:0 0 4px rgba(40,167,69,0.4);
 }
 
 
-button{
-width:150px;
-padding:12px;
-background:#27ae60;
-color:white;
-border:none;
-border-radius:6px;
-font-size:16px;
-cursor:pointer;
-margin-top:10px;
+.btn{
+	display:inline-block;
+	padding:10px 14px;
+	border-radius:8px;
+	border:none;
+	cursor:pointer;
 }
 
-button:hover{
-background:#218838;
-transform:scale(1.05);
-}
+.btn-green{ background:#10b981; color:#fff }
+.btn-green:hover{ background:#047857 }
+.btn-ghost{ background:#eef2f7; color:#0b1220; border:1px solid #e2e8f0 }
+.btn-ghost:hover{ background:#e6eef3 }
+.btn-danger{ background:#ef4444; color:#fff }
+.btn-danger:hover{ background:#c53030 }
+
+button:hover{ transform: none }
 
 h2{
 margin-top:20px;
@@ -83,9 +86,10 @@ box-shadow:0 10px 30px rgba(0,0,0,0.3);
 
 .form{
 display:flex;
-justify-content:center;
+align-items:center;
 gap:10px;
-margin-bottom:20px;
+margin-bottom:16px;
+flex-wrap:wrap;
 }
 
 .form input{
@@ -111,11 +115,12 @@ margin-bottom:20px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-background:#f4f4f4;
-padding:12px 15px;
-margin:6px 0;
-border-radius:8px;
-font-size:18px;
+background:#fbfdff;
+padding:12px 16px;
+margin:8px 0;
+border-radius:10px;
+font-size:16px;
+box-shadow: 0 2px 6px rgba(15,23,42,0.04);
 }
 
 #total{
@@ -129,20 +134,54 @@ margin-top:20px;
 }
 
 #expenseList button{
-background:red;
-color:white;
-border:none;
-padding:5px 10px;
-border-radius:5px;
-cursor:pointer;
-font-size:16px;
 }
 
-#expenseList button:hover{
-background:#c0392b;
-}
+#expenseList button{ padding:6px 10px; font-size:14px }
+
+#expenseList .btn-danger{ background:#ef4444 }
+#expenseList .btn-danger:hover{ background:#c53030 }
+
+.btn-small{ padding:6px 8px; font-size:13px; border-radius:6px }
 
 .logout{
-background:#e74c3c;
-margin-bottom:10px;
+	float:right;
+	padding:8px 12px;
+	border-radius:8px;
+	background:transparent;
+	border:1px solid rgba(11,18,32,0.06);
+}
+
+/* password toggle button inside input wrapper */
+.password-toggle{
+	position:absolute;
+	right:10px;
+	top:50%;
+	transform:translateY(-50%);
+	background:transparent;
+	border:none;
+	color:#065f46;
+	font-weight:600;
+	cursor:pointer;
+	padding:4px 6px;
+}
+.password-toggle:focus{ outline:none }
+
+/* make logout appear like green button but hover to red */
+.logout.btn-green{ background:#10b981; color:#fff; border: none }
+.logout.btn-green:hover{ background:#c53030; color:#fff }
+
+/* responsive adjustments */
+@media (max-width: 700px) {
+	.container{ padding:18px }
+	.form{ gap:8px }
+	.form input[type="text"], .form input[type="number"], .form input[type="date"]{ flex-basis: 100%; }
+	button, .btn{ width: auto; padding:10px 12px; font-size:14px }
+	#expenseList li{ font-size:15px }
+}
+
+.filter-label{ margin-top:8px; color:#0f172a; font-weight:600 }
+
+@media (max-width: 420px) {
+	h1{ font-size:22px }
+	.container{ padding:14px }
 }
