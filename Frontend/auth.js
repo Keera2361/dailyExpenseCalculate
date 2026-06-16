@@ -58,7 +58,11 @@ alert("Login Successful");
 emailInput.value = "";
 passwordInput.value = "";
 
+
 localStorage.setItem("token", data.token);
+if (data.user && data.user.name) {
+	localStorage.setItem("name", data.user.name);
+}
 
 window.location.href = "index.html";
 

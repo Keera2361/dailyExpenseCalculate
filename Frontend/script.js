@@ -7,6 +7,13 @@ if(!localStorage.getItem("token")){
 
 const TOKEN = localStorage.getItem("token");
 
+// Display logged-in user's name if available
+const USER_NAME = localStorage.getItem('name');
+const userGreetingEl = document.getElementById('userGreeting');
+if (userGreetingEl) {
+    userGreetingEl.innerText = USER_NAME ? `Hello, ${USER_NAME}` : '';
+}
+
 let chart;
 
 // Current date filter (defaults to today)
@@ -256,6 +263,7 @@ function logout(){
         return;}
 
 localStorage.removeItem("token");
+localStorage.removeItem("name");
 
 window.location.href="login.html";
 
