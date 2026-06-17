@@ -42,11 +42,62 @@ npm install
 
 ```bash
 node server.js
+# Daily Expenses Tracker
+
+A small, full‑stack app to record and visualise daily expenses. The backend is an Express API with MongoDB, and the frontend is a lightweight static UI in the `Frontend/` folder.
+
+## Quick Features
+- Add expenses with optional custom date
+- Per-user data isolation (JWT + server-side session tracking)
+- Delete single or all expenses
+- Monthly spending chart (Chart.js)
+
+## Tech stack
+- Node.js + Express
+- MongoDB (Mongoose)
+- Vanilla HTML/CSS/JS (+ Chart.js)
+
+## Requirements
+- Node 18+ (or a recent LTS)
+- MongoDB available (local or remote)
+
+## Environment
+Create a `.env` file in the project root with at least:
+
+- `MONGO_URI` — MongoDB connection string (e.g. `mongodb://127.0.0.1:27017/daily-expense-calculate`)
+- `JWT_SECRET` — a long random secret for signing tokens
+- `PORT` — optional (default 8000)
+
+## Setup
+1. Clone the repository
+
+```bash
+git clone https://github.com/Keera2361/dailyExpenseCalculate.git
+cd dailyExpenseCalculate
+```
+2. Install dependencies
+
+```bash
+npm install
+```
+3. Create `.env` and add required variables (see Environment above).
+
+4. Start the app
+
+```bash
+node server.js
 # or for development (auto-restart):
 npm run dev
 ```
 
 Open `Frontend/index.html` in a browser (or serve the folder) and log in/register.
+
+If you run the backend locally, open http://localhost:8000 (or your `PORT`) and serve the `Frontend/` folder from the same origin or use a simple static server. Example quick serve:
+
+```bash
+# from the project root
+npx serve Frontend    # or: npm install -g serve && serve Frontend
+```
 
 ## API (short)
 - `POST /api/user/register` — register (returns `token`)
@@ -62,6 +113,9 @@ Protected endpoints require `Authorization: Bearer <token>` header. The app issu
 ## Frontend behaviour
 - Optional "Use custom date" checkbox allows entering a manual date. If unchecked, today's date is used automatically.
 - Each expense shows its date in the list and contributes to the monthly chart.
+
+- Loading indicator: the UI shows a full-page overlay spinner during async API operations. Customize styles in `Frontend/style.css` and the show/hide helpers in `Frontend/script.js` (functions `showLoading()` / `hideLoading()`).
+- Authentication pages: open `Frontend/login.html` and `Frontend/register.html` to sign in or create accounts.
 
 ## Development & tests
 - Quick API tests included under `scripts/`: `scripts/test_api.js` and `scripts/test_two_users.js` illustrate register/login/add/get flows and session revocation checks.

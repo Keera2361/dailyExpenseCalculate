@@ -14,6 +14,11 @@ if (userGreetingEl) {
     userGreetingEl.innerText = USER_NAME ? `Hello, ${USER_NAME}` : '';
 }
 
+// Loading overlay helper
+const _loadingOverlay = document.getElementById('loadingOverlay');
+function showLoading(){ if(_loadingOverlay) _loadingOverlay.style.display = 'flex'; }
+function hideLoading(){ if(_loadingOverlay) _loadingOverlay.style.display = 'none'; }
+
 let chart;
 
 // Current date filter (defaults to today)
@@ -64,6 +69,7 @@ async function addExpense(){
 
 const itemInput = document.getElementById("item");
 const amountInput = document.getElementById("amount");
+            showLoading();
 const dateInput = document.getElementById("date");
 const useDate = useDateCheckbox && useDateCheckbox.checked;
 
@@ -131,7 +137,7 @@ async function deleteAllExpenses(){
     }
     });
 
-    loadExpenses();
+    await loadExpenses();
 
 };
 
@@ -144,70 +150,69 @@ headers: {
 }
 });
 
-loadExpenses();
+    await loadExpenses();
 
 };
 
 async function loadExpenses(){
+    showLoading();
+    try {
+        const res = await fetch(API, {
+            headers: {
+                "Authorization": "Bearer " + TOKEN
+            }
+        });
+        const data = await res.json();
 
-const res = await fetch(API, {
-    headers: {
-        "Authorization": "Bearer " + TOKEN
+        const list = document.getElementById("expenseList");
+        list.innerHTML = "";
+
+        let total = 0;
+        let monthlyData = {};
+
+        // Apply filter mode
+        const now = new Date();
+        data.forEach(expense => {
+            const expenseObj = new Date(expense.date);
+
+            if (filterMode === 'date') {
+                if (!filterDateObj) return;
+                if (expenseObj.getFullYear() !== filterDateObj.getFullYear() ||
+                    expenseObj.getMonth() !== filterDateObj.getMonth() ||
+                    expenseObj.getDate() !== filterDateObj.getDate()) return;
+            } else if (filterMode === 'today') {
+                if (expenseObj.getFullYear() !== now.getFullYear() ||
+                    expenseObj.getMonth() !== now.getMonth() ||
+                    expenseObj.getDate() !== now.getDate()) return;
+            }
+
+            total += expense.amount;
+
+            const li = document.createElement("li");
+            const displayDate = expenseObj.toLocaleDateString();
+            li.innerHTML = `\n${expense.item} - ₹${expense.amount} <span style="color:#666;font-size:0.9em;">(${displayDate})</span>\n<button class="btn btn-danger btn-small" onclick="deleteExpense('${expense._id}')">Delete</button>\n`;
+
+            list.appendChild(li);
+
+            const month = expenseObj.toLocaleString('default',{month:'short'});
+            if(!monthlyData[month]) monthlyData[month]=0;
+            monthlyData[month]+=expense.amount;
+        });
+
+        document.getElementById("total").innerText = total;
+        createChart(monthlyData);
+
+    } catch (err) {
+        console.error('Load expenses error', err);
+        alert('Could not load expenses.');
+    } finally {
+        hideLoading();
     }
-});
-const data = await res.json();
-
-const list = document.getElementById("expenseList");
-list.innerHTML="";
-
-let total = 0;
-
-let monthlyData = {};
-
-// Apply filter mode
-const now = new Date();
-data.forEach(expense => {
-    const expenseObj = new Date(expense.date);
-
-    if (filterMode === 'date') {
-        if (!filterDateObj) return;
-        if (expenseObj.getFullYear() !== filterDateObj.getFullYear() ||
-            expenseObj.getMonth() !== filterDateObj.getMonth() ||
-            expenseObj.getDate() !== filterDateObj.getDate()) return;
-    } else if (filterMode === 'today') {
-        if (expenseObj.getFullYear() !== now.getFullYear() ||
-            expenseObj.getMonth() !== now.getMonth() ||
-            expenseObj.getDate() !== now.getDate()) return;
-    }
-
-    total += expense.amount;
-
-    const li = document.createElement("li");
-    const displayDate = expenseObj.toLocaleDateString();
-    li.innerHTML = `
-${expense.item} - ₹${expense.amount} <span style="color:#666;font-size:0.9em;">(${displayDate})</span>
-<button class="btn btn-danger btn-small" onclick="deleteExpense('${expense._id}')">Delete</button>
-`;
-
-    list.appendChild(li);
-
-    const month = expenseObj.toLocaleString('default',{month:'short'});
-
-    if(!monthlyData[month]) monthlyData[month]=0;
-
-    monthlyData[month]+=expense.amount;
-
-});
-
-document.getElementById("total").innerText = total;
-
-createChart(monthlyData);
 
 };
 
 function createChart(data){
-
-const months = Object.keys(data);
+    const months = Object.keys(data);
 const values = Object.values(data);
 
 const ctx = document.getElementById("expenseChart");
@@ -257,14 +262,7 @@ function updateFilterLabel(){
 }
 
 function logout(){
-    
-    if(!localStorage.getItem("token")){
-        window.location.href = "login.html";
-        return;}
-
-localStorage.removeItem("token");
-localStorage.removeItem("name");
-
-window.location.href="login.html";
-
-};
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    window.location.href = "login.html";
+}

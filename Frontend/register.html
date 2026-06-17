@@ -18,10 +18,17 @@
 	<button type="button" class="password-toggle" onclick="togglePassword('password', this)">Show</button>
 </div>
 
+    <div id="authMessage" class="auth-message" style="display:none"></div>
+
 <button class="btn btn-green" onclick="register()">Register</button>
 
 <a class="link" href="login.html">Already have account? Login</a>
 
+</div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" aria-hidden="true" style="display:none;">
+	<div class="spinner" role="status" aria-label="Loading"></div>
 </div>
 
 <script src="auth.js"></script>

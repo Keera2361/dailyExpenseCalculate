@@ -185,3 +185,28 @@ margin-top:20px;
 	h1{ font-size:22px }
 	.container{ padding:14px }
 }
+
+/* Inline auth message (error/success) */
+.auth-message{ margin-top:12px; padding:10px 12px; border-radius:8px; display:none; font-size:14px }
+.auth-message.error{ background:#fff1f0; color:#7a0b0b; border:1px solid #ffd2d0 }
+.auth-message.success{ background:#f0fff4; color:#0b6b4a; border:1px solid #c6f5d8 }
+
+/* Loading overlay + spinner */
+#loadingOverlay{
+	position:fixed;
+	inset:0;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	background:rgba(0,0,0,0.35);
+	z-index:9999;
+}
+.spinner{
+	width:48px;
+	height:48px;
+	border-radius:50%;
+	border:6px solid rgba(255,255,255,0.35);
+	border-top-color:#ffffff;
+	animation:spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg) } }
